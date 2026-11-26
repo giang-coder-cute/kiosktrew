@@ -1,0 +1,40 @@
+name: Build Google Book OS ISO
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_distro:
+        description: "Base Linux distribution"
+        required: true
+        default: "debian-bookworm"
+      deepseek_text_model:
+        description: "DeepSeek text model"
+        required: true
+        default: "deepseek-r1:1.5b"
+
+jobs:
+  build-iso:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Free up runner disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /opt/ghc /usr/local/share/boost || true
+          df -h
+
+      - name: Build Google Book OS ISO inside Debian Bookworm Container
+        run: |
+          mkdir -p out
+          docker build -f Dockerfile.builder -t bookos-builder .
+          docker run --rm --privileged -v "${{ github.workspace }}/out:/out" bookos-builder bash -c "./build-iso.sh && cp google-book-os-*.iso* /out/"
+
+      - name: Upload ISO Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: google-book-os-bookworm-amd64-iso
+          path: |
+            out/google-book-os-bookworm-amd64.iso
+            out/google-book-os-bookworm-amd64.iso.sha256
+          retention-days: 7
