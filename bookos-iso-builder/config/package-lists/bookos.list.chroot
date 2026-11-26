@@ -1,0 +1,59 @@
+# ==============================================================================
+# Google Book OS — Minimal Package List (No Wi-Fi / No Bluetooth / Chrome-First)
+# ==============================================================================
+
+# Core X11 & Display Manager
+xorg
+xserver-xorg-video-all
+lightdm
+lightdm-gtk-greeter
+dbus-x11
+mesa-utils
+
+# Window Manager & Android-like Dock / App Launcher
+openbox
+obconf
+tint2
+rofi
+feh
+nitrogen
+pcmanfm
+xbindkeys
+xdotool
+wmctrl
+xclip
+scrot
+zenity
+fonts-noto-core
+fonts-noto-color-emoji
+papirus-icon-theme
+
+# Wired-Only Networking & Diagnostics (No wpasupplicant / No bluez)
+systemd
+iproute2
+iputils-ping
+isc-dhcp-client
+ethtool
+curl
+ca-certificates
+gnupg2
+usb-modeswitch
+
+# Audio & System Utilities
+pulseaudio
+pavucontrol
+alsa-utils
+htop
+nano
+unzip
+
+# DeepSeek Local Runtime Dependencies (Ollama + Janus-Pro Python Bridge)
+python3
+python3-pip
+python3-venv
+git
+zstd
+
+# VirtualBox Guest Integration
+virtualbox-guest-x11
+virtualbox-guest-utils
