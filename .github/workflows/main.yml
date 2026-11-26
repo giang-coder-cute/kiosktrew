@@ -26,15 +26,21 @@ jobs:
 
       - name: Build Google Book OS ISO inside Debian Bookworm Container
         run: |
-          mkdir -p out
-          docker build -f Dockerfile.builder -t bookos-builder .
-          docker run --rm --privileged -v "${{ github.workspace }}/out:/out" bookos-builder bash -c "./build-iso.sh && cp google-book-os-*.iso* /out/"
+          DOCKERFILE_PATH="$(find . -maxdepth 4 -name 'Dockerfile.builder' -print -quit)"
+          if [ -z "$DOCKERFILE_PATH" ]; then
+            echo "::error::Khong tim thay Dockerfile.builder trong repo! Hay push day du thu muc tu file zip (Dockerfile.builder, build-iso.sh, auto/, config/)."
+            ls -la
+            exit 1
+          fi
+          BUILDER_DIR="$(dirname "$DOCKERFILE_PATH")"
+          echo "Detected builder directory: $BUILDER_DIR"
+          mkdir -p "${{ github.workspace }}/out"
+          docker build -f "$BUILDER_DIR/Dockerfile.builder" -t bookos-builder "$BUILDER_DIR"
+          docker run --rm --privileged -v "${{ github.workspace }}/out:/out" bookos-builder bash -c "./build-iso.sh && cp -f google-book-os-*.iso* /out/"
 
       - name: Upload ISO Artifact
         uses: actions/upload-artifact@v4
         with:
           name: google-book-os-bookworm-amd64-iso
-          path: |
-            out/google-book-os-bookworm-amd64.iso
-            out/google-book-os-bookworm-amd64.iso.sha256
+          path: out/google-book-os-*.iso*
           retention-days: 7
